@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>line chart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1"></script>
+    <script>
+      const createDatasets = function () {
+        const labels = ['投下資本', '価値創造率', '初期成功率', '学習コスト率', '学習改善率']
+        /*
+         *
+          * c: 投下資本
+          * vr: 価値創造率
+          * isr: 初期成功率
+          * lc: 学習コスト率
+          * le: 学習改善率
+          * n: 学習回数
+          * index: インデックス
+        */
+        const calc = function (c, vr, isr, lc, le, n) {
+          const sr = isr * (1 + le * n)
+          console.log(isr, le, n, sr)
+          const v = c * vr * sr
+          const pl = v - c * (1 + lc)
+          return pl
+        }
+        const datasets = []
+        const borderColors = [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)'
+        ]
+        const remarks = [
+          'パターン1: 標準',
+          'パターン2: 学習積極投資',
+          'パターン3: 学習コスト削減'
+        ]
+        for (let i = 1; i <= 3; i++) {
+          const data = {
+            label: remarks[i - 1],
+            data: [],
+            borderColor: borderColors[i - 1],
+          }
+          for (let n = 1; n <= 10; n++) {
+            data.data.push(calc(
+              Number.parseFloat(document.querySelector(`#投下資本_${i}`).value),
+              Number.parseFloat(document.querySelector(`#価値創造率_${i}`).value),
+              Number.parseFloat(document.querySelector(`#初期成功率_${i}`).value),
+              Number.parseFloat(document.querySelector(`#学習コスト率_${i}`).value),
+              Number.parseFloat(document.querySelector(`#学習改善率_${i}`).value),
+              n
+            ))
+          }
+          datasets.push(data)
+        }
+        return datasets
+      }
+      const draw = function () {
+        let context = document.querySelector("#chart").getContext('2d')
+        const datasets = createDatasets()
+        window.chart=new Chart(context, {
+          type: 'line',
+          data: {
+            labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+            datasets: datasets,
+          },
+          options: {
+            responsive: false,
+          }
+        })
+      }
+      const reDraw = function () {
+        if (chart) {
+        chart.destroy();
+      }
+        draw()
+      }
+      window.onload = function () {
+        draw()
+      }
+
+    </script>
+  </head>
+  <body>
+    <h1 class="text-xl font-extrabold ml-4 pt-4">プロジェクトにおける学びの投資</h1>
+    <div class="px-8 pt-6 pb-8 mb-4">
+      <canvas id="chart" width="600" height="400"></canvas>
+      <b>数式</b>
+      <div>
+        <math>
+        <mrow>
+          <mi>損益</mi>
+          <mo>=</mo>
+          <mi>価値</mi>
+          <mo>&minus;</mo>
+          <mi>投下資本</mi>
+          <mo>&times;</mo>
+          <mo>(</mo>
+          <mn>1</mn>
+          <mo>&plus;</mo>
+          <mi>学習コスト率</mi>
+          <mo>)</mo>
+        </mrow>
+        </math>
+      </div>
+      <div>
+      <math>
+        <mrow>
+          <mi>価値</mi>
+          <mo>=</mo>
+          <mi>投下資本</mi>
+          <mo>&times;</mo>
+          <mi>価値創造率</mi>
+          <mo>&times;</mo>
+          <mi>成功率</mi>
+        </mrow>
+        </math>
+      </div>
+      <div>
+        <math>  
+        <mrow>
+          <mi>成功率</mi>
+          <mo>=</mo>
+          <mi>初期成功率</mi>
+          <mo>&times;</mo>
+          <mo>(</mo>
+          <mn>1</mn>
+          <mo>&plus;</mo>
+          <mi>学習改善率</mi>
+          <mo>&times;</mo>
+          <mi>回数</mi>
+          <mo>)</mo>
+        </mrow>
+      </math>
+      </div>
+      <button class="bg-blue-700 hover:bg-blue-600 text-white rounded px-4 py-2 my-2" onclick="reDraw()">再描画</button>
+      <form class="pt-3 pb-3 mb-2">
+        <b>パターン1(標準)</b>
+        <div class="grid gap-6 mb-2 md:grid-cols-3">
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="投下資本_1">
+              投下資本
+            </label>
+            <input id="投下資本_1" type="text" placeholder="投下資本" value="1000" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="価値創造率_1">
+              価値創造率
+            </label>
+            <input id="価値創造率_1" type="text" placeholder="価値創造率_" value="5" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="初期成功率_1">
+              初期成功率
+            </label>
+            <input id="初期成功率_1" type="text" placeholder="初期成功率" value="0.2" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="学習コスト率_1">
+              学習コスト率
+            </label>
+            <input id="学習コスト率_1" type="text" placeholder="学習コスト率" value="0" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="学習改善率_1">
+              学習改善率
+            </label>
+            <input id="学習改善率_1" type="text" placeholder="学習改善率" value="0" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+        </div>
+      </form>
+      <form class="pt-3 pb-3 mb-2">
+        <b>パターン(学習積極投資)</b>
+        <div class="grid gap-6 mb-2 md:grid-cols-3">
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="投下資本_2">
+              投下資本
+            </label>
+            <input id="投下資本_2" type="text" placeholder="投下資本" value="1000" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="価値創造率_2">
+              価値創造率
+            </label>
+            <input id="価値創造率_2" type="text" placeholder="価値創造率_" value="5" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="初期成功率_2">
+              初期成功率
+            </label>
+            <input id="初期成功率_2" type="text" placeholder="初期成功率" value="0.2" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="学習コスト率_2">
+              学習コスト率
+            </label>
+            <input id="学習コスト率_2" type="text" placeholder="学習コスト率" value="0.1" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="学習改善率_2">
+              学習改善率
+            </label>
+            <input id="学習改善率_2" type="text" placeholder="学習改善率" value="0.05" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+        </div>
+      </form>
+      <form class="pt-3 pb-3 mb-2">
+        <b>パターン3(学習コスト削減)</b>
+        <div class="grid gap-6 mb-2 md:grid-cols-3">
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="投下資本_3">
+              投下資本
+            </label>
+            <input id="投下資本_3" type="text" placeholder="投下資本" value="1000" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="価値創造率_3">
+              価値創造率
+            </label>
+            <input id="価値創造率_3" type="text" placeholder="価値創造率_" value="5" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="初期成功率_3">
+              初期成功率
+            </label>
+            <input id="初期成功率_3" type="text" placeholder="初期成功率" value="0.2" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="学習コスト率_3">
+              学習コスト率
+            </label>
+            <input id="学習コスト率_3" type="text" placeholder="学習コスト率" value="-0.1" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="学習改善率_3">
+              学習改善率
+            </label>
+            <input id="学習改善率_3" type="text" placeholder="学習改善率" value="-0.05" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          </div>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
